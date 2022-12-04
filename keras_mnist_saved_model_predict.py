@@ -3,6 +3,7 @@ from tensorflow import keras
 from keras import layers
 import cv2
 
+# load trained model (simple convnet)
 model = keras.models.load_model("keras-mnist")
 
 i = 0
