@@ -1,5 +1,10 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
+
 
 # Load a dataset
 (ds_train, ds_test), ds_info = tfds.load(
@@ -47,5 +52,18 @@ model.fit(
     validation_data=ds_test,
 )
 
-# Save model
-model.save("mnist-model")
+# Attach a softmax layer to convert the model's linear outputs—logits—to probabilities
+probability_model = tf.keras.Sequential([model, tf.keras.layers.Softmax()])
+
+i = 0
+while i < 10:
+    img=cv2.imread('example_images\\' + str(i) + '.jpg', cv2.IMREAD_GRAYSCALE)
+    img_res=cv2.resize(img, (28,28), interpolation = cv2.INTER_AREA)/255.
+    #plt.imshow(img_res)
+    img_exp = np.expand_dims(img_res, 0)
+    prediction = model.predict(img_exp)
+    prob_pred = probability_model.predict(img_exp)
+    print(prediction)
+    print(prob_pred)
+    print("Probably number " + str(np.argmax(prediction[0])) + "(" + str(round(prob_pred[0][np.argmax(prob_pred[0])]*100, 1)) + " %)")
+    i = i+1
